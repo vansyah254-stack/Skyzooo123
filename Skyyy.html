@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>X-FC IOS v3 - KELZZ EDITION</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body {
+            background: #0a0a0a;
+            color: #00ff00;
+            min-height: 100vh;
+            padding: 15px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,255,0,0.2);
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            text-shadow: 0 0 10px #00ff00;
+            margin-bottom: 5px;
+        }
+        
+        .header .status {
+            font-size: 14px;
+            color: #00cc00;
+            margin-top: 10px;
+            padding: 8px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        
+        .target-input {
+            background: #1a1a1a;
+            border: 2px solid #00ff00;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .target-input input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #00ff00;
+            font-size: 16px;
+            outline: none;
+            padding: 5px;
+        }
+        
+        .target-input input::placeholder {
+            color: #666;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: #1a1a1a;
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            padding: 12px 5px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00ff00;
+        }
+        
+        .stat-label {
+            font-size: 10px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .feature-btn {
+            background: #1a1a1a;
+            border: 2px solid;
+            border-radius: 15px;
+            padding: 18px 5px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.2s;
+            cursor: pointer;
+            user-select: none;
+            color: white;
+        }
+        
+        .feature-btn:active {
+            transform: scale(0.95);
+            filter: brightness(1.5);
+        }
+        
+        .danger-btn { border-color: #ff0000; background: #330000; }
+        .warning-btn { border-color: #ffa500; background: #332200; }
+        .success-btn { border-color: #00ff00; background: #003300; }
+        .info-btn { border-color: #0088cc; background: #001a33; }
+        .hack-btn { border-color: #4b0082; background: #1a0033; }
+        .social-btn { border-color: #e4405f; background: #330a14; }
+        
+        .console {
+            background: #000000;
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #00ff00;
+            font-weight: bold;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+        
+        .console-content {
+            color: #00ff00;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        
+        .console-line {
+            margin: 3px 0;
+            word-break: break-all;
+        }
+        
+        .console-line.error { color: #ff5555; }
+        .console-line.success { color: #55ff55; }
+        .console-line.warning { color: #ffff55; }
+        
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #00ff00;
+            width: 0%;
+            transition: width 0.3s;
+            box-shadow: 0 0 10px #00ff00;
+        }
+        
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .blink {
+            animation: blink 1s infinite;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a1a;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 12px 24px;
+            color: #00ff00;
+            font-weight: bold;
+            z-index: 1000;
+            box-shadow: 0 0 20px rgba(0,255,0,0.3);
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .modal-content {
+            background: #1a1a1a;
+            border: 3px solid #00ff00;
+            border-radius: 20px;
+            padding: 25px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #00ff00;
+        }
+        
+        .modal-item {
+            padding: 12px;
+            margin: 8px 0;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .modal-item:active {
+            background: #00ff00;
+            color: #000;
+        }
+        
+        .close-btn {
+            text-align: center;
+            margin-top: 15px;
+            padding: 12px;
+            background: #330000;
+            border: 1px solid #ff0000;
+            border-radius: 8px;
+            color: #ff5555;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔓 X-FC IOS v3.0</h1>
+            <h3 style="color: #888; font-size: 14px; margin-top: 5px;">KELZZ-AI EDITION</h3>
+            <div class="status" id="status">
+                <span class="blink">⚡</span> SYSTEM READY
+            </div>
+        </div>
+        
+        <!-- Target Input -->
+        <div class="target-input">
+            <input type="text" id="targetNumber" placeholder="+62xxxxxxxxxx" value="">
+        </div>
+        
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalAttacks">0</div>
+                <div class="stat-label">ATTACKS</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="successRate">0%</div>
+                <div class="stat-label">SUCCESS</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="activeThreads">0</div>
+                <div class="stat-label">THREADS</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="dataCollected">0</div>
+                <div class="stat-label">DATA</div>
+            </div>
+        </div>
+        
+        <!-- Features Grid - ROW 1 -->
+        <div class="features-grid">
+            <div class="feature-btn danger-btn" onclick="startAttack('force')">💥 FORCE ATTACK</div>
+            <div class="feature-btn danger-btn" onclick="startAttack('crash')">💀 CRASH SYSTEM</div>
+            <div class="feature-btn success-btn" onclick="startAttack('camera')">📷 CAMERA HACK</div>
+            <div class="feature-btn warning-btn" onclick="startAttack('lock')">🔒 REMOTE LOCK</div>
+        </div>
+        
+        <!-- Features Grid - ROW 2 -->
+        <div class="features-grid">
+            <div class="feature-btn hack-btn" onclick="startAttack('sms')">💬 SMS BOMBER</div>
+            <div class="feature-btn social-btn" onclick="startAttack('whatsapp')">📱 WA HACK</div>
+            <div class="feature-btn info-btn" onclick="startAttack('telegram')">✈️ TG HACK</div>
+            <div class="feature-btn social-btn" onclick="startAttack('instagram')">📸 IG HACK</div>
+        </div>
+        
+        <!-- Features Grid - ROW 3 -->
+        <div class="features-grid">
+            <div class="feature-btn info-btn" onclick="startAttack('facebook')">👥 FB HACK</div>
+            <div class="feature-btn success-btn" onclick="startAttack('gallery')">🖼️ GALLERY</div>
+            <div class="feature-btn success-btn" onclick="startAttack('contacts')">📇 CONTACTS</div>
+            <div class="feature-btn warning-btn" onclick="startAttack('location')">📍 LOCATION</div>
+        </div>
+        
+        <!-- Features Grid - ROW 4 -->
+        <div class="features-grid">
+            <div class="feature-btn hack-btn" onclick="startAttack('keylogger')">⌨️ KEYLOGGER</div>
+            <div class="feature-btn danger-btn" onclick="startAttack('wipe')">🔥 WIPE DATA</div>
+            <div class="feature-btn info-btn" onclick="showTargets()">🎯 TARGETS</div>
+            <div class="feature-btn info-btn" onclick="showSettings()">⚙️ SETTINGS</div>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+        
+        <!-- Console -->
+        <div class="console" id="console">
+            <div class="console-header">
+                <span>🔧 CONSOLE OUTPUT</span>
+                <span onclick="clearConsole()" style="cursor: pointer;">🗑️ CLEAR</span>
+            </div>
+            <div class="console-content" id="consoleContent">
+                <div class="console-line success">✅ System initialized</div>
+                <div class="console-line success">✅ 42 exploits loaded</div>
+                <div class="console-line">⚡ Waiting for target...</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for Targets -->
+    <div class="modal" id="targetsModal">
+        <div class="modal-content">
+            <div class="modal-title">🎯 SAVED TARGETS</div>
+            <div id="targetList"></div>
+            <div class="close-btn" onclick="closeModal('targetsModal')">CLOSE</div>
+        </div>
+    </div>
+    
+    <!-- Modal for Settings -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-title">⚙️ SETTINGS</div>
+            <div class="modal-item" onclick="setSetting('threads', '10')">Threads: 10</div>
+            <div class="modal-item" onclick="setSetting('threads', '50')">Threads: 50</div>
+            <div class="modal-item" onclick="setSetting('threads', '100')">Threads: 100</div>
+            <div class="modal-item" onclick="setSetting('delay', '0')">Delay: 0ms (MAX)</div>
+            <div class="modal-item" onclick="setSetting('delay', '100')">Delay: 100ms</div>
+            <div class="modal-item" onclick="setSetting('delay', '500')">Delay: 500ms</div>
+            <div class="modal-item" onclick="setSetting('mode', 'aggressive')">Mode: AGGRESSIVE</div>
+            <div class="modal-item" onclick="setSetting('mode', 'stealth')">Mode: STEALTH</div>
+            <div class="modal-item" onclick="setSetting('mode', 'normal')">Mode: NORMAL</div>
+            <div class="close-btn" onclick="closeModal('settingsModal')">CLOSE</div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div class="toast" id="toast" style="display: none;"></div>
+    
+    <script>
+        // ==================== CONFIGURATION ====================
+        const CONFIG = {
+            threads: 50,
+            delay: 0,
+            mode: 'aggressive',
+            maxAttacks: 1000,
+            c2Server: 'https://kelzz-c2-server.com/api',
+            useProxy: true
+        };
+        
+        // ==================== STATE ====================
+        let state = {
+            attacks: 0,
+            success: 0,
+            threads: 0,
+            dataCollected: 0,
+            isRunning: false,
+            currentAttack: null,
+            targets: JSON.parse(localStorage.getItem('targets') || '[]')
+        };
+        
+        // ==================== UI FUNCTIONS ====================
+        function updateStatus(message, type = 'info') {
+            const statusEl = document.getElementById('status');
+            statusEl.innerHTML = `<span class="blink">⚡</span> ${message}`;
+            
+            // Add to console
+            addToConsole(message, type);
+        }
+        
+        function addToConsole(message, type = 'info') {
+            const consoleEl = document.getElementById('consoleContent');
+            const line = document.createElement('div');
+            line.className = 'console-line ' + (type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : '');
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleEl.appendChild(line);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+            
+            // Keep only last 100 lines
+            while (consoleEl.children.length > 100) {
+                consoleEl.removeChild(consoleEl.firstChild);
+            }
+        }
+        
+        function clearConsole() {
+            document.getElementById('consoleContent').innerHTML = '';
+            addToConsole('Console cleared', 'success');
+        }
+        
+        function updateStats() {
+            document.getElementById('totalAttacks').textContent = state.attacks;
+            document.getElementById('successRate').textContent = 
+                state.attacks > 0 ? Math.round((state.success / state.attacks) * 100) + '%' : '0%';
+            document.getElementById('activeThreads').textContent = state.threads;
+            document.getElementById('dataCollected').textContent = state.dataCollected;
+        }
+        
+        function updateProgress(percent) {
+            document.getElementById('progress').style.width = percent + '%';
+        }
+        
+        function showToast(message, duration = 2000) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, duration);
+        }
+        
+        function showModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+        
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+        
+        function showTargets() {
+            const listEl = document.getElementById('targetList');
+            listEl.innerHTML = '';
+            
+            if (state.targets.length === 0) {
+                listEl.innerHTML = '<div class="modal-item">No saved targets</div>';
+            } else {
+                state.targets.forEach((target, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'modal-item';
+                    item.textContent = target.number + ' (' + target.count + ' attacks)';
+                    item.onclick = () => {
+                        document.getElementById('targetNumber').value = target.number;
+                        closeModal('targetsModal');
+                    };
+                    listEl.appendChild(item);
+                });
+            }
+            
+            showModal('targetsModal');
+        }
+        
+        function showSettings() {
+            showModal('settingsModal');
+        }
+        
+        function setSetting(key, value) {
+            CONFIG[key] = value;
+            addToConsole(`Setting changed: ${key} = ${value}`, 'success');
+            showToast(`${key} set to ${value}`);
+            closeModal('settingsModal');
+        }
+        
+        // ==================== ATTACK FUNCTIONS ====================
+        function startAttack(type) {
+            const target = document.getElementById('targetNumber').value.trim();
+            
+            if (!target) {
+                showToast('Masukkan nomor target!');
+                return;
+            }
+            
+            if (state.isRunning) {
+                showToast('Attack already running!');
+                return;
+            }
+            
+            state.isRunning = true;
+            state.currentAttack = type;
+            
+            // Save target
+            const existing = state.targets.find(t => t.number === target);
+            if (existing) {
+                existing.count++;
+            } else {
+                state.targets.push({ number: target, count: 1 });
+            }
+            localStorage.setItem('targets', JSON.stringify(state.targets));
+            
+            // Start attack
+            updateStatus(`Starting ${type} attack on ${target}...`, 'warning');
+            addToConsole(`🚀 Attack initiated: ${type.toUpperCase()}`, 'warning');
+            
+            switch(type) {
+                case 'force':
+                    forceAttack(target);
+                    break;
+                case 'crash':
+                    crashSystem(target);
+                    break;
+                case 'camera':
+                    cameraHack(target);
+                    break;
+                case 'lock':
+                    remoteLock(target);
+                    break;
+                case 'sms':
+                    smsBomber(target);
+                    break;
+                case 'whatsapp':
+                    whatsappHack(target);
+                    break;
+                case 'telegram':
+                    telegramHack(target);
+                    break;
+                case 'instagram':
+                    instagramHack(target);
+                    break;
+                case 'facebook':
+                    facebookHack(target);
+                    break;
+                case 'gallery':
+                    galleryAccess(target);
+                    break;
+                case 'contacts':
+                    contactsAccess(target);
+                    break;
+                case 'location':
+                    locationTracking(target);
+                    break;
+                case 'keylogger':
+                    keylogger(target);
+                    break;
+                case 'wipe':
+                    wipeData(target);
+                    break;
+            }
+        }
+        
+        function forceAttack(target) {
+            const totalThreads = CONFIG.threads;
+            state.threads = totalThreads;
+            
+            for (let i = 0; i < totalThreads; i++) {
+                setTimeout(() => {
+                    const threadId = i;
+                    const interval = setInterval(() => {
+                        if (!state.isRunning) {
+                            clearInterval(interval);
+                            return;
+                        }
+                        
+                        // Simulate attack
+                        state.attacks++;
+                        const success = Math.random() > 0.3;
+                        if (success) state.success++;
+                        
+                        addToConsole(`[Thread ${threadId}] Attack #${state.attacks} - ${success ? 'SUCCESS' : 'FAILED'}`, 
+                                   success ? 'success' : 'error');
+                        
+                        if (state.attacks >= CONFIG.maxAttacks) {
+                            clearInterval(interval);
+                            state.threads--;
+                        }
+                    }, CONFIG.delay);
+                }, i * 50);
+            }
+            
+            // Monitor completion
+            const monitor = setInterval(() => {
+                updateStats();
+                updateProgress((state.attacks / CONFIG.maxAttacks) * 100);
+                
+                if (state.attacks >= CONFIG.maxAttacks || state.threads === 0) {
+                    clearInterval(monitor);
+                    state.isRunning = false;
+                    updateStatus(`Force attack completed: ${state.success}/${state.attacks} successful`, 'success');
+                    addToConsole(`✅ FORCE ATTACK FINISHED`, 'success');
+                    showToast('Attack completed!');
+                }
+            }, 100);
+        }
+        
+        function crashSystem(target) {
+            updateStatus('💀 CRASH SYSTEM - Sending crash payloads...', 'warning');
+            
+            let crashes = 0;
+            const crashTypes = [
+                'buffer_overflow',
+                'null_pointer',
+                'infinite_loop',
+                'memory_leak',
+                'stack_overflow',
+                'format_string',
+                'integer_overflow',
+                'race_condition'
+            ];
+            
+            const interval = setInterval(() => {
+                if (crashes >= 100 || !state.isRunning) {
+                    clearInterval(interval);
+                    state.isRunning = false;
+                    updateStatus(`Crash system completed: ${crashes} payloads sent`, 'success');
+                    return;
+                }
+                
+                const crashType = crashTypes[Math.floor(Math.random() * crashTypes.length)];
+                addToConsole(`💥 Sending ${crashType} payload...`, 'warning');
+                crashes++;
+                state.attacks++;
+                
+                // Simulate crash effect
+                if (Math.random() > 0.7) {
+                    addToConsole(`✅ Target system unstable!`, 'success');
+                    state.success++;
+                }
+                
+                updateStats();
+                updateProgress((crashes / 100) * 100);
+            }, CONFIG.delay || 50);
+        }
+        
+        function cameraHack(target) {
+            updateStatus('📷 CAMERA HACK - Accessing camera...', 'warning');
+            
+            let photos = 0;
+            const interval = setInterval(() => {
+                if (photos >= 50 || !state.isRunning) {
+                    clearInterval(interval);
+                    state.isRunning = false;
+                    updateStatus(`Camera hack completed: ${photos} photos captured`, 'success');
+                    return;
+                }
+                
+                photos++;
+                state.dataCollected++;
+                addToConsole(`📸 Photo #${photos} captured from target's camera`, 'success');
+                
+                updateStats();
+                updateProgress((photos / 50) * 100);
+            }, 1000);
+        }
+        
+        function remoteLock(target) {
+            updateStatus('🔒 REMOTE LOCK - Locking target device...', 'warning');
+            
+            addToConsole('🔑 Generating random password...', 'info');
+            const password = Math.random().toString(36).substring(2, 10) + 
+                            Math.random().toString(36).substring(2, 10).toUpperCase() +
+                            '!@#$%^&*'.split('')[Math.floor(Math.random() * 8)];
+            
+            addToConsole(`✅ Device locked with password: ${password}`, 'success');
+            addToConsole('🔐 Admin privileges granted', 'success');
+            addToConsole('📱 Factory reset command sent', 'warning');
+            
+            state.success++;
+            state.attacks++;
+            updateStatus('REMOTE LOCK - Device locked successfully', 'success');
+            updateStats();
+            
+            state.isRunning = false;
+        }
+        
+        function smsBomber(target) {
+            updateStatus('💬 SMS BOMBER - Sending 1000 SMS...', 'warning');
+            
+            let sent = 0;
+            const messages = [
+                'URGENT: Your account needs verification',
+                'OTP Code: 123456 - Do not share',
+                'Your package has been delivered',
+                'Security alert from your bank',
+                'Your subscription is expiring',
+                'You won a prize! Claim now',
+                'Verify your login from new device',
+                'Payment received: Rp 1.000.000',
+                'Your bill is due tomorrow',
+                'Suspicious activity detected'
+            ];
+            
+            const interval = setInterval(() => {
+                if (sent >= 1000 || !state.isRunning) {
+                    clearInterval(interval);
+                    state.isRunning = false;
+                    updateStatus(`SMS Bomber completed: ${sent} messages sent`, 'success');
+                    return;
+                }
+                
+                const msg = messages[sent % messages.length] + ` #${sent}`;
+                addToConsole(`📨 SMS #${sent}: ${msg}`, 'info');
+                sent++;
+                state.attacks++;
+                state.success++;
+                
+                updateStats();
+                updateProgress((sent / 1000) * 100);
+            }, CONFIG.delay || 10);
+        }
+        
+        function whatsappHack(target) {
+            updateStatus('📱 WHATSAPP HACK - Extracting data...', 'warning');
+            
+            setTimeout(() => {
+                addToConsole('🔍 Accessing WhatsApp database...', 'info');
+                addToConsole('📁 Found chats.db', 'success');
+                addToConsole('📁 Found contacts.db', 'success');
+                addToConsole('📁 Found media folder', 'success');
+                
+                const chats = Math.floor(Math.random() * 1000) + 500;
+                const contacts = Math.floor(Math.random() * 200) + 100;
+                const media = Math.floor(Math.random() * 500) + 200;
+                
+                addToConsole(`💬 Extracted ${chats} chat conversations`, 'success');
+                addToConsole(`👥 Extracted ${contacts} contacts`, 'success');
+                addToConsole(`📸 Extracted ${media} media files`, 'success');
+                
+                state.dataCollected += chats + contacts + media;
+                state.attacks++;
+                state.success++;
+                
+                updateStatus('WhatsApp data extraction complete', 'success');
+                updateStats();
+                state.isRunning = false;
+            }, 2000);
+        }
+        
+        function telegramHack(target) {
+            updateStatus('✈️ TELEGRAM HACK - Extracting data...', 'warning');
+            
+            setTimeout(() => {
+                addToConsole('🔍 Accessing Telegram cache...', 'info');
+                addToConsole('📁 Extracting session data', 'success');
+                addToConsole('📁 Found telegram.db', 'success');
+                
+                const messages = Math.floor(Math.random() * 5000) + 1000;
+                const files = Math.floor(Math.random() * 300) + 100;
+                
+                addToConsole(`💬 Extracted ${messages} messages`, 'success');
+                addToConsole(`📎 Extracted ${files} files`, 'success');
+                
+                state.dataCollected += messages + files;
+                state.attacks++;
+                state.success++;
+                
+                updateStatus('Telegram data extraction complete', 'success');
+                updateStats();
+                state.isRunning = false;
+            }, 2000);
+        }
+        
+        function instagramHack(target) {
+            updateStatus('📸 INSTAGRAM HACK - Extracting data...', 'warning');
+            
+            setTimeout(() => {
+                addToConsole('🔍 Accessing Instagram cache...', 'info');
+                addToConsole('📁 Extracting session cookies', 'success');
+                
+                const photos = Math.floor(Math.random() * 1000) + 500;
+                const stories = Math.floor(Math.random() * 100) + 50;
+                const dms = Math.floor(Math.random() * 500) + 200;
+                
+                addToConsole(`📸 Extracted ${photos} photos`, 'success');
+                addToConsole(`📱 Extracted ${stories} stories`, 'success');
+                addToConsole(`💬 Extracted ${dms} DMs`, 'success');
+                
+                state.dataCollected += photos + stories + dms;
+                state.attacks++;
+                state.success++;
+                
+                updateStatus('Instagram data extraction complete', 'success');
+                updateStats();
+                state.isRunning = false;
+            }, 2000);
+        }
+        
+        function facebookHack(target) {
+            updateStatus('👥 FACEBOOK HACK - Extracting data...', 'warning');
+            
+            setTimeout(() => {
+                addToConsole('🔍 Accessing Facebook database...', 'info');
+                
+                const friends = Math.floor(Math.random() * 1000) + 500;
+                const photos = Math.floor(Math.random() * 2000) + 1000;
+                const posts = Math.floor(Math.random() * 500) + 200;
+                
+                addToConsole(`👥 Extracted ${friends} friends list`, 'success');
+                addToConsole(`📸 Extracted ${photos} photos`, 'success');
+                addToConsole(`📝 Extracted ${posts} posts`, 'success');
+                
+                state.dataCollected += friends + photos + posts;
+                state.attacks++;
+                state.success++;
+                
+                updateStatus('Facebook data extraction complete', 'success');
+                updateStats();
+                state.isRunning = false;
+            }, 2000);
+        }
+        
+        function galleryAccess(target) {
+            updateStatus('🖼️ GALLERY ACCESS - Extracting media...', 'warning');
+            
+            setTimeout(() => {
+                addToConsole('🔍 Scanning gallery...', 'info');
+                
+                const images = Math.floor(Math.random() * 5000) + 1000;
+                const videos = Math.floor(Math.random() * 500) + 100;
+                const screenshots = Math.floor(Math.random() * 200) + 50;
+                
+                addToConsole(`📸 Found ${images} images`, 'success');
+                addToConsole(`🎥 Found ${videos} videos`, 'success');
+                addToConsole(`📱 Found ${screenshots} screenshots`, 'success');
+                addToConsole('📤 Uploading to C2 server...', 'warning');
+                
+                state.dataCollected += images + videos + screenshots;
+                state.attacks++;
+                state.success++;
+                
+                updateStatus('Gallery extraction complete', 'success');
+                updateStats();
+                state.isRunning = false;
+            }, 3000);
+        }
+        
+        function contactsAccess(target) {
+            updateStatus('📇 CONTACTS ACCESS - Extracting contacts...', 'warning');
+            
+            setTimeout(() => {
+                addToConsole('🔍 Reading contact database...', 'info');
+                
+                const contacts = Math.floor(Math.random() * 1000) + 100;
+                const emails = Math.floor(Math.random() * 300) + 50;
+                const addresses = Math.floor(Math.random() * 200) + 20;
+                
+                addToConsole(`👥 Extracted ${contacts} contacts`, 'success');
+                addToConsole(`📧 Extracted ${emails} emails`, 'success');
+                addToConsole(`🏠 Extracted ${addresses} addresses`, 'success');
+                
+                state.dataCollected += contacts + emails + addresses;
+                state.attacks++;
+                state.success++;
+                
+                updateStatus('Contacts extraction complete', 'success');
+                updateStats();
+                state.isRunning = false;
+            }, 2000);
+        }
+        
+        function locationTracking(target) {
+            updateStatus('📍 LOCATION TRACKING - Starting...', 'warning');
+            
+            let updates = 0;
+            const interval = setInterval(() => {
+                if (updates >= 20 || !state.isRunning) {
+                    clearInterval(interval);
+                    state.isRunning = false;
+                    updateStatus('Location tracking stopped', 'success');
+                    return;
+                }
+                
+                const lat = (-6 + (Math.random() * 12)).toFixed(6);
+                const lon = (106 + (Math.random() * 12)).toFixed(6);
+                
+                addToConsole(`📍 Location update #${updates + 1}: ${lat}, ${lon} (accuracy: ${Math.floor(Math.random() * 10) + 5}m)`, 'success');
+                
+                updates++;
+                state.dataCollected++;
+                updateStats();
+                updateProgress((updates / 20) * 100);
+            }, 3000);
+        }
+        
+        function keylogger(target) {
+            updateStatus('⌨️ KEYLOGGER - Activated', 'warning');
+            
+            let keys = 0;
+            const interval = setInterval(() => {
+                if (keys >= 500 || !state.isRunning) {
+                    clearInterval(interval);
+                    state.isRunning = false;
+                    updateStatus(`Keylogger captured ${keys} keystrokes`, 'success');
+                    return;
+                }
+                
+                const chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+                const typed = chars.charAt(Math.floor(Math.random() * chars.length));
+                
+                if (keys % 50 === 0) {
+                    addToConsole(`⌨️ Captured keystroke: ${typed.repeat(Math.floor(Math.random() * 10) + 1)}`, 'info');
+                }
+                
+                keys++;
+                state.dataCollected++;
+                updateStats();
+            }, 100);
+        }
+        
+        function wipeData(target) {
+            updateStatus('🔥 WIPE DATA - Deleting all data...', 'danger');
+            
+            setTimeout(() => {
+                addToConsole('⚠️ WARNING: Factory reset initiated', 'error');
+                addToConsole('📱 Deleting contacts...', 'error');
+                addToConsole('📸 Deleting media...', 'error');
+                addToConsole('💬 Deleting messages...', 'error');
+                addToConsole('⚙️ Resetting settings...', 'error');
+                addToConsole('✅ Target device wiped successfully', 'success');
+                
+                state.attacks++;
+                state.success++;
+                updateStatus('WIPE DATA - Target device wiped', 'success');
+                updateStats();
+                state.isRunning = false;
+            }, 3000);
+        }
+        
+        // ==================== INITIALIZATION ====================
+        window.onload = function() {
+            updateStats();
+            addToConsole('⚡ X-FC IOS v3.0 KELZZ EDITION loaded', 'success');
+            addToConsole('🔓 42 exploit modules ready', 'success');
+            addToConsole('🎯 Enter target number to begin', 'info');
+        };
+    </script>
+</body>
+</html>
